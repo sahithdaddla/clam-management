@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claims Management System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: #f0f2f5;
+    color: #333;
+    font-size: 16px;
+}
+
+.dashboard {
+    padding: 0rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    margin-top: 0px;
+    margin-bottom: 5px;
+}
+
+.header {
+    position: relative;
+    width: 100%;
+    margin: 20px auto 0px;
+    padding: 0px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+h2 {
+    background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+    color: white;
+    width: 100%;
+    max-width: 1200px;
+    padding: 25px 20px;
+    text-align: center;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    border-top-left-radius: 15px;    
+    border-top-right-radius: 15px;
+    position: relative;
+    overflow: hidden;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    animation: fadeInDown 1.2s ease-out, gradientShift 15s ease infinite;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+h2 i {
+    margin-right: 10px;
+}
+
+h2::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(30deg);
+    animation: shimmer 6s linear infinite;
+    pointer-events: none;
+}
+
+h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.5);
+    animation: slideRight 2s ease-out forwards;
+    transform-origin: left;
+}
+
+@keyframes fadeInDown {
+    0% {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+@keyframes slideRight {
+    0% {
+        transform: scaleX(0);
+    }
+    100% {
+        transform: scaleX(1);
+    }
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.claim-form {
+    background: white;
+    padding: 2rem;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    animation: slideUp 0.5s ease-out;
+}
+
+.claim-form h3 {
+    display: flex;
+    align-items: center;
+}
+
+.claim-form h3 i {
+    margin-right: 10px;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.form-group label {
+    margin-left: 5px;
+    display: block;
+}
+
+.character-count {
+    position: absolute;
+    top: 90px;
+    bottom: 10px;
+    right: 10px;
+    font-size: 0.8rem;
+    color: #777;
+    margin-top: 5px;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e1e1e1;
+    border-radius: 5px;
+    margin-top: 5px;
+    transition: border-color 0.3s;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #5474e5;
+    outline: none;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #6b8afd, #5474e5);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.submit-btn i {
+    margin-right: 8px;
+}
+
+.submit-btn:hover {
+    background: blue;
+    transform: translateY(-2px);
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 5px;
+    background: #4CAF50;
+    color: white;
+    transform: translateX(150%);
+    transition: transform 0.3s;
+    z-index: 1000;
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.error-message {
+    color: #e53935;
+    font-size: 0.8rem;
+    margin-top: 5px;
+    display: none;
+}
+
+.error-message.visible {
+    display: block;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .dashboard {
+        padding: 1rem;
+        max-width: 95%;
+    }
+    
+    .header {
+        margin-top: 15px;
+    }
+    
+    h2 {
+        font-size: 1.6rem;
+        padding: 20px 15px;
+    }
+}
+
+@media (max-width: 992px) {
+    .header {
+        padding: 0;
+    }
+    
+    h2 {
+        font-size: 1.4rem;
+        padding: 18px 15px;
+    }
+
+    .claim-form {
+        padding: 1.5rem;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard {
+        padding: 0.5rem;
+        max-width: 98%;
+    }
+
+    .header {
+        margin-top: 10px;
+    }
+    
+    h2 {
+        font-size: 1.2rem;
+        padding: 15px 10px;
+    }
+
+    .claim-form {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+    
+    .dashboard {
+        padding: 0.3rem;
+        max-width: 100%;
+    }
+    
+    .header {
+        margin-top: 5px;
+    }
+
+    h2 {
+        font-size: 1rem;
+        padding: 12px 8px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+    
+    h2 i {
+        margin-right: 5px;
+    }
+
+    .claim-form {
+        padding: 0.75rem;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+    .submit-btn {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    input, select, textarea {
+        padding: 10px;
+    }
+}
+    </style>
+</head>
+<body>
+    <div id="employeeModule" class="dashboard">
+        <div class="header">
+            <h2><i class="fas fa-user"></i> EMPLOYEE CLAIMS DASHBOARD</h2>
+        </div>
+        <div class="claim-form">
+            <h3><i class="fas fa-plus-circle"></i> NEW CLAIM</h3><br>
+            <div class="form-group">
+                <label for="employeeId">Employee ID</label>
+                <input type="text" id="employeeId" placeholder="Enter Your Employee ID" maxlength="7">
+                <small class="error-message" id="employeeIdError">Invalid Employee ID format. Must be ATS0 followed by 3 digits.</small>
+            </div>
+            <div class="form-group">
+                <label for="claimType">Claim Type</label>
+                <select id="claimType">
+                    <option value="">-- Select Claim Type --</option>
+                    <option value="travel">Travel Claim</option>
+                    <option value="medical">Medical Claim</option>
+                    <option value="training">Training Claim</option>
+                    <option value="wfh">Work From Home Claim</option>
+                </select>
+                <small class="error-message" id="claimTypeError">Please select a claim type.</small>
+            </div>
+            <div class="form-group">
+                <label for="claimDate">Date</label>
+                <input type="date" id="claimDate">
+                <small class="error-message" id="claimDateError">Please select a claim date.</small>
+            </div>
+            <div class="form-group">
+                <label for="claimAmount">Amount</label>
+                <input type="number" id="claimAmount" placeholder="Enter amount">
+                <small class="error-message" id="claimAmountError">Claim amount must be at least ₹500.</small>
+            </div>
+            <div class="form-group">
+                <label for="claimDescription">Description <span class="character-count" id="descriptionCount">0/300</span></label>
+                <textarea id="claimDescription" rows="4" placeholder="Enter claim details" style="resize: none;" minlength="5" maxlength="300"></textarea>
+                <small class="error-message" id="claimDescriptionError">Claim description must be at least 5 alphabetic characters long.</small>
+            </div>
+            <button class="submit-btn" onclick="submitClaim()">
+                <i class="fas fa-paper-plane"></i> Submit Claim
+            </button>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        let claims = [];
+
+        function sanitizeInput(input) {
+            // Remove extra spaces
+            return input.replace(/\s+/g, ' ').trim();
+        }
+
+        function hasAlphabeticCharacters(text) {
+            return /[A-Za-z]/.test(text);
+        }
+
+        function validateEmployeeId(employeeId) {
+            // First check if input is just spaces
+            if (!hasAlphabeticCharacters(employeeId) && employeeId.trim() === '') {
+                const errorElement = document.getElementById('employeeIdError');
+                errorElement.textContent = 'Employee ID cannot be empty or contain only spaces.';
+                errorElement.classList.add('visible');
+                return false;
+            }
+            
+            // Then validate format
+            const pattern = /^ATS0(?!000)\d{3}$/;
+            const isValid = pattern.test(employeeId);
+            
+            const errorElement = document.getElementById('employeeIdError');
+            if (!isValid) {
+                errorElement.textContent = 'Invalid Employee ID format. Must be ATS0 followed by 3 digits.';
+                errorElement.classList.add('visible');
+            } else {
+                errorElement.classList.remove('visible');
+            }
+            
+            return isValid;
+        }
+
+        function validateClaimType(claimType) {
+            const isValid = claimType !== "";
+            
+            const errorElement = document.getElementById('claimTypeError');
+            if (!isValid) {
+                errorElement.classList.add('visible');
+            } else {
+                errorElement.classList.remove('visible');
+            }
+            
+            return isValid;
+        }
+
+        function validateClaimDate() {
+            const claimDate = document.getElementById('claimDate').value;
+            const errorElement = document.getElementById('claimDateError');
+            
+            if (!claimDate) {
+                errorElement.textContent = 'Please select a claim date.';
+                errorElement.classList.add('visible');
+                return false;
+            }
+            
+            const year = claimDate.split('-')[0];
+            if (year.length !== 4 || isNaN(year)) {
+                errorElement.textContent = 'Please enter a valid 4-digit year for the claim date.';
+                errorElement.classList.add('visible');
+                return false;
+            }
+            
+            errorElement.classList.remove('visible');
+            return true;
+        }
+
+        function validateClaimAmount(amount) {
+            const errorElement = document.getElementById('claimAmountError');
+            
+            if (!amount || amount < 500) {
+                errorElement.classList.add('visible');
+                return false;
+            }
+            
+            errorElement.classList.remove('visible');
+            return true;
+        }
+
+        function validateClaimDescription(description) {
+            const errorElement = document.getElementById('claimDescriptionError');
+            
+            // Check if description is empty or only contains spaces
+            if (!description || description.trim() === '') {
+                errorElement.textContent = 'Please provide a claim description.';
+                errorElement.classList.add('visible');
+                return false;
+            }
+            
+            // Count alphabetic characters (excluding spaces and other characters)
+            const alphabeticCharCount = (description.match(/[A-Za-z]/g) || []).length;
+            
+            if (alphabeticCharCount < 5) {
+                errorElement.textContent = 'Claim description must contain at least 5 alphabetic characters.';
+                errorElement.classList.add('visible');
+                return false;
+            }
+            
+            errorElement.classList.remove('visible');
+            return true;
+        }
+
+        function submitClaim() {
+            // Get form values
+            let employeeId = document.getElementById('employeeId').value;
+            const claimType = document.getElementById('claimType').value;
+            const claimDate = document.getElementById('claimDate').value;
+            const claimAmount = document.getElementById('claimAmount').value;
+            let claimDescription = document.getElementById('claimDescription').value;
+            
+            // Apply trimming to text fields
+            employeeId = sanitizeInput(employeeId);
+            claimDescription = sanitizeInput(claimDescription);
+            
+            // Update the input fields with sanitized values
+            document.getElementById('employeeId').value = employeeId;
+            document.getElementById('claimDescription').value = claimDescription;
+            
+            let isValid = true;
+
+            // Validate all fields
+            if (!validateEmployeeId(employeeId)) isValid = false;
+            if (!validateClaimType(claimType)) isValid = false;
+            if (!validateClaimDate()) isValid = false;
+            if (!validateClaimAmount(claimAmount)) isValid = false;
+            if (!validateClaimDescription(claimDescription)) isValid = false;
+
+            if (!isValid) {
+                showNotification('Please Fill the Claim Details Properly.', 'error');
+                return;
+            }
+
+            // Load existing claims
+            claims = JSON.parse(localStorage.getItem('claims')) || [];
+
+            const claim = {
+                id: Date.now(),
+                employeeId: employeeId,
+                type: claimType,
+                date: claimDate,
+                amount: claimAmount,
+                description: claimDescription,
+                status: 'pending',
+                submittedAt: new Date().toISOString()
+            };
+
+            // Add claim to localStorage
+            claims.push(claim);
+            localStorage.setItem('claims', JSON.stringify(claims));
+
+            // Reset form
+            document.getElementById('employeeId').value = '';
+            document.getElementById('claimType').value = '';
+            document.getElementById('claimDate').value = '';
+            document.getElementById('claimAmount').value = '';
+            document.getElementById('claimDescription').value = '';
+            document.getElementById('descriptionCount').textContent = '0/300';
+
+            // Reset all error messages
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.classList.remove('visible');
+            });
+
+            showNotification('Claim submitted successfully!', 'success');
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.background = type === 'success' ? '#4CAF50' : '#f44336';
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Prevent spaces only in employee ID
+        document.getElementById('employeeId').addEventListener('input', function(e) {
+            // If input is ONLY spaces (no alphanumeric characters yet)
+            if (!hasAlphabeticCharacters(this.value) && this.value.trim() === '') {
+                // Remove all spaces as they're typed
+                this.value = this.value.replace(/\s/g, '');
+            } else {
+                validateEmployeeId(this.value);
+            }
+        });
+
+        document.getElementById('claimType').addEventListener('change', function() {
+            validateClaimType(this.value);
+        });
+
+        document.getElementById('claimDate').addEventListener('input', function() {
+            validateClaimDate();
+        });
+
+        document.getElementById('claimAmount').addEventListener('input', function() {
+            validateClaimAmount(this.value);
+        });
+
+        // Prevent spaces only in description
+        document.getElementById('claimDescription').addEventListener('input', function(e) {
+            // If input is ONLY spaces (no alphanumeric characters yet)
+            if (!hasAlphabeticCharacters(this.value) && this.value.trim() === '') {
+                // Remove all spaces as they're typed
+                this.value = this.value.replace(/\s/g, '');
+            } else {
+                validateClaimDescription(this.value);
+            }
+            
+            // Update character count
+            const currentLength = this.value.length;
+            document.getElementById('descriptionCount').textContent = `${currentLength}/300`;
+        });
+
+        // Initialize form
+        document.addEventListener('DOMContentLoaded', () => {
+            // Clear any visible error messages
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.classList.remove('visible');
+            });
+            
+            // Load existing claims if needed
+            claims = JSON.parse(localStorage.getItem('claims')) || [];
+        });
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Claims Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            color: #333;
+        }
+
+        .nav-bar {
+            background: #2c3e50;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            flex-wrap: wrap;
+        }
+
+        .nav-bar h2 {
+            font-size: 1.5rem;
+        }
+
+        .nav-bar button {
+            padding: 8px 16px;
+            background: #dc3545;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .nav-bar button:hover {
+            background: #c82333;
+        }
+
+        .dashboard {
+            padding: 1rem;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #6b8afd, #5474e5);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            animation: slideDown 1s ease-out;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .stat-card i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #3498db;
+        }
+
+        /* New Search and Filter Container */
+        .search-filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 35px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .status-dropdown {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .clear-btn {
+            padding: 10px 20px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .clear-btn:hover {
+            background: #c82333;
+        }
+
+        .tab-container {
+            margin-bottom: 2rem;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: #3498db;
+            color: white;
+        }
+
+        /* Table Styles */
+        .claims-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .claims-table th, .claims-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .claims-table thead th {
+            background-color: #3498db;
+            color: white;
+            font-weight: 600;
+        }
+
+        .claims-table tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: 500;
+            display: inline-block;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-size: 0.9em;
+        }
+
+        .view-btn {
+            background: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .approve-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .reject-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            background-color: white;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            padding: 2rem;
+            position: relative;
+            animation: scaleIn 0.3s ease-out;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #eee;
+            padding-top: 1rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .info-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .info-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+
+        .info-group p {
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            word-wrap: break-word; /* Add this for proper word wrapping */
+            overflow-wrap: break-word; /* Modern browsers */
+            max-width: 100%; /* Ensure content doesn't exceed container width */
+            white-space: normal; /* Allow text to wrap */
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 5px;
+            transform: translateX(150%);
+            transition: transform 0.3s;
+            z-index: 1000;
+            color: white;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        /* Confirmation Dialog Styles */
+        .confirmation-dialog {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .confirm-content {
+            background-color: white;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            padding: 1.5rem;
+            text-align: center;
+            animation: scaleIn 0.3s ease-out;
+        }
+
+        .confirm-message {
+            margin-bottom: 1.5rem;
+        }
+
+        .confirm-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .confirm-btn, .cancel-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .confirm-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .confirm-btn:hover {
+            background: #218838;
+        }
+
+        .cancel-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .cancel-btn:hover {
+            background: #c82333;
+        }
+
+        /* Animation Keyframes */
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Empty state for no results */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            color: #555;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: #888;
+        }
+
+        /* Media Queries for responsiveness */
+        @media (max-width: 768px) {
+            .nav-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 1.5rem;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .tab-buttons {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .tab-btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+
+            .search-filter-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-container {
+                justify-content: space-between;
+            }
+
+            .claims-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .action-buttons {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .stat-card i {
+                font-size: 1.5rem;
+            }
+
+            .tab-btn {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .search-filter-container {
+                gap: 0.75rem;
+            }
+
+            .search-box, .status-dropdown, .clear-btn {
+                width: 100%;
+            }
+
+            .filter-container {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .modal-content {
+                padding: 1rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+            }
+
+            .action-btn {
+                width: 100%;
+                margin-top: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+    <div class="header">
+        <h1>CLAIMS MANAGEMENT PORTAL</h1>
+    </div>
+
+    <div class="stats-container">
+        <div class="stat-card">
+            <i class="fas fa-file-invoice-dollar"></i>
+            <h3>Total Claims</h3>
+            <p id="hrTotalClaims">0</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-check-circle"></i>
+            <h3>Approved</h3>
+            <p id="hrApprovedClaims">0</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-times-circle"></i>
+            <h3>Rejected</h3>
+            <p id="hrRejectedClaims">0</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-clock"></i>
+            <h3>Pending</h3>
+            <p id="hrPendingClaims">0</p>
+        </div>
+    </div>
+
+    <!-- New Search and Filter Container -->
+    <div class="search-filter-container">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search claims..." oninput="searchClaims(this.value)">
+        </div>
+        <div class="filter-container">
+            <select id="statusDropdown" class="status-dropdown" onchange="filterByStatus(this.value)">
+                <option value="all">All Claims</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+            </select>
+            <button class="clear-btn" onclick="confirmClearRecords()">
+                <i class="fas fa-trash-alt"></i> Clear Records
+            </button>
+        </div>
+    </div>
+
+    <div id="hrClaimsList">
+        <!-- Claims table will be populated here -->
+    </div>
+</div>
+
+<!-- Modal for Viewing Claim Details -->
+<div id="claimModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <div class="modal-header">
+            <h2 id="modalTitle">Claim Details</h2>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <!-- Claim details will be populated here -->
+        </div>
+        <div class="modal-footer" id="modalFooter">
+            <!-- Action buttons will be populated here if needed -->
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Dialog -->
+<div id="confirmationDialog" class="confirmation-dialog">
+    <div class="confirm-content">
+        <div class="confirm-message" id="confirmMessage"></div>
+        <div class="confirm-buttons">
+            <button id="confirmButton" class="confirm-btn">OK</button>
+            <button id="cancelButton" class="cancel-btn">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div class="notification" id="notification"></div>
+
+<script>
+let claims = JSON.parse(localStorage.getItem('claims')) || [];
+let currentFilter = 'all';
+let searchQuery = '';
+let currentActionData = null;
+
+function updateClaimStatus(claimId, status) {
+    // Create specific confirmation messages for approve/reject
+    const action = status === 'approved' ? 'Approve' : 'Reject';
+    
+    showConfirmationDialog(
+        `Are you sure you want to ${action} this claim? This action cannot be undone.`,
+        () => {
+            const claimIndex = claims.findIndex(claim => claim.id === claimId);
+            if (claimIndex !== -1) {
+                claims[claimIndex].status = status;
+                localStorage.setItem('claims', JSON.stringify(claims));
+                loadDashboard();
+                showNotification(`Claim ${action}d successfully!`, 'success');
+                closeModal();
+            }
+        }
+    );
+}
+
+function filterByStatus(status) {
+    currentFilter = status;
+    loadDashboard();
+}
+
+function searchClaims(query) {
+    searchQuery = query.toLowerCase();
+    loadDashboard();
+}
+
+function filterClaimsByStatus(claimsArray) {
+    if (currentFilter === 'all') return claimsArray;
+    return claimsArray.filter(claim => claim.status === currentFilter);
+}
+
+function filterClaimsBySearch(claimsArray) {
+    if (!searchQuery) return claimsArray;
+    return claimsArray.filter(claim => 
+        claim.employeeId.toString().includes(searchQuery) ||
+        claim.type.toLowerCase().includes(searchQuery) ||
+        claim.description.toLowerCase().includes(searchQuery) ||
+        claim.amount.toString().includes(searchQuery)
+    );
+}
+
+function updateStats() {
+    document.getElementById('hrTotalClaims').textContent = claims.length;
+    document.getElementById('hrApprovedClaims').textContent = 
+        claims.filter(claim => claim.status === 'approved').length;
+    document.getElementById('hrRejectedClaims').textContent = 
+        claims.filter(claim => claim.status === 'rejected').length;
+    document.getElementById('hrPendingClaims').textContent = 
+        claims.filter(claim => claim.status === 'pending').length;
+}
+
+function loadDashboard() {
+    updateStats();
+    const hrClaimsList = document.getElementById('hrClaimsList');
+    hrClaimsList.innerHTML = '';
+
+    // Apply both filters
+    let filteredClaims = filterClaimsByStatus(claims);
+    filteredClaims = filterClaimsBySearch(filteredClaims);
+
+    if (filteredClaims.length === 0) {
+        hrClaimsList.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-folder-open"></i>
+                <h3>No Claims Found</h3>
+                <p>No claims match your current search or filter criteria.</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Create table
+    const table = document.createElement('table');
+    table.className = 'claims-table';
+    
+    // Create table header
+    const thead = document.createElement('thead');
+    thead.innerHTML = `
+        <tr>
+            <th>Claim Type</th>
+            <th>Employee ID</th>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    `;
+    table.appendChild(thead);
+    
+    // Create table body
+    const tbody = document.createElement('tbody');
+    
+    filteredClaims.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt))
+        .forEach(claim => {
+            const tr = document.createElement('tr');
+            
+            tr.innerHTML = `
+                <td>${claim.type.charAt(0).toUpperCase() + claim.type.slice(1)}</td>
+                <td>${claim.employeeId}</td>
+                <td>${new Date(claim.date).toLocaleDateString()}</td>
+                <td>₹${claim.amount}</td>
+                <td><span class="status-badge status-${claim.status}">${claim.status.toUpperCase()}</span></td>
+                <td class="action-buttons">
+                    <button class="action-btn view-btn" onclick="viewClaimDetails(${claim.id})">
+                        <i class="fas fa-eye"></i> View
+                    </button>
+                    ${claim.status === 'pending' ? `
+                    ` : ''}
+                </td>
+            `;
+            
+            tbody.appendChild(tr);
+        });
+    
+    table.appendChild(tbody);
+    hrClaimsList.appendChild(table);
+}
+
+function viewClaimDetails(claimId) {
+    const claim = claims.find(c => c.id === claimId);
+    if (!claim) return;
+    
+    const modalBody = document.getElementById('modalBody');
+    const modalFooter = document.getElementById('modalFooter');
+    const modalTitle = document.getElementById('modalTitle');
+    
+    // Set title
+    modalTitle.textContent = `${claim.type.charAt(0).toUpperCase() + claim.type.slice(1)} Claim Details`;
+    
+    // Set body content
+    modalBody.innerHTML = `
+        <div class="info-group">
+            <label>Employee ID</label>
+            <p>${claim.employeeId}</p>
+        </div>
+        <div class="info-group">
+            <label>Submitted Date</label>
+            <p>${new Date(claim.submittedAt).toLocaleString()}</p>
+        </div>
+        <div class="info-group">
+            <label>Claim Date</label>
+            <p>${new Date(claim.date).toLocaleDateString()}</p>
+        </div>
+        <div class="info-group">
+            <label>Amount</label>
+            <p>₹${claim.amount}</p>
+        </div>
+        <div class="info-group">
+            <label>Description</label>
+            <p>${claim.description}</p>
+        </div>
+        <div class="info-group">
+            <label>Status</label>
+            <p><span class="status-badge status-${claim.status}">${claim.status.toUpperCase()}</span></p>
+        </div>
+    `;
+    
+    // Set footer buttons if claim is pending
+    if (claim.status === 'pending') {
+        modalFooter.innerHTML = `
+            <button class="action-btn approve-btn" onclick="updateClaimStatus(${claim.id}, 'approved')">
+                <i class="fas fa-check"></i> Approve
+            </button>
+            <button class="action-btn reject-btn" onclick="updateClaimStatus(${claim.id}, 'rejected')">
+                <i class="fas fa-times"></i> Reject
+            </button>
+        `;
+    } else {
+        modalFooter.innerHTML = `
+            <button class="action-btn view-btn" onclick="closeModal()">
+                <i class="fas fa-times"></i> Close
+            </button>
+        `;
+    }
+    
+    // Display modal
+    document.getElementById('claimModal').style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('claimModal').style.display = 'none';
+}
+
+function confirmClearRecords() {
+    showConfirmationDialog(
+        'Are you sure you want to clear all records ? This action cannot be undone and all data will be permanently removed.',
+        clearRecords
+    );
+}
+
+function clearRecords() {
+            // Set a flag in localStorage to indicate claims were cleared
+            localStorage.setItem('claimsCleared', 'true');
+            
+            // Clear the claims
+            localStorage.removeItem('claims');
+            claims = [];
+            
+            // Update the UI
+            loadDashboard();
+            
+            // Show notification
+            showNotification('All claims records have been permanently cleared.', 'warning');
+        }
+
+function showNotification(message, type = 'success') {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    
+    // Different background colors based on notification type
+    if (type === 'success') {
+        notification.style.background = '#4CAF50';  // Green for success
+    } else if (type === 'warning') {
+        notification.style.background = '#ff9800';  // Orange for warning
+    } else if (type === 'error') {
+        notification.style.background = '#f44336';  // Red for error
+    } else if (type === 'info') {
+        notification.style.background = '#2196F3';  // Blue for info
+    }
+    
+    notification.classList.add('show');
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 3000);
+}
+
+function showConfirmationDialog(message, onConfirm) {
+    const dialog = document.getElementById('confirmationDialog');
+    const messageElement = document.getElementById('confirmMessage');
+    const confirmButton = document.getElementById('confirmButton');
+    const cancelButton = document.getElementById('cancelButton');
+    
+    // Set message
+    messageElement.textContent = message;
+    
+    // Set button actions
+    confirmButton.onclick = () => {
+        onConfirm();
+        dialog.style.display = 'none';
+    };
+    
+    cancelButton.onclick = () => {
+        dialog.style.display = 'none';
+    };
+    
+    // Show dialog
+    dialog.style.display = 'flex';
+}
+
+// Make sure dropdown reflects current filter state when page loads
+function syncUIWithState() {
+    document.getElementById('statusDropdown').value = currentFilter;
+    document.getElementById('searchInput').value = searchQuery;
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('claimModal');
+    const dialog = document.getElementById('confirmationDialog');
+    if (event.target === modal) {
+        closeModal();
+    }
+    if (event.target === dialog) {
+        dialog.style.display = 'none';
+    }
+}
+
+// Initialize dashboard on load
+document.addEventListener('DOMContentLoaded', () => {
+    loadDashboard();
+    syncUIWithState();
+});
+
+</script>
+</body>
+</html>
